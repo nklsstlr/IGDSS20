@@ -501,11 +501,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 512232609}
   speed: 1.5
-  xMin: -100
-  xMax: 100
-  zMin: -100
-  zMax: 100
   boxCollider: {fileID: 2075104153}
+  minFov: 15
+  maxFov: 90
+  scrollSensitivity: 10
 --- !u!4 &834136087
 Transform:
   m_ObjectHideFlags: 0

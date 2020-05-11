@@ -2,7 +2,7 @@
 
 public class MouseManager : MonoBehaviour
 {
-    private Vector3 dragOrigin;
+    private Vector3 _dragOrigin;
     public Camera mainCamera;
     public float speed = 1.5f;
     public BoxCollider boxCollider;
@@ -21,17 +21,27 @@ public class MouseManager : MonoBehaviour
     private void LateUpdate()
     {
         ChangeFov();
-        
         if (Input.GetMouseButtonDown(1))
         {
-            dragOrigin = Input.mousePosition;
+            _dragOrigin = Input.mousePosition;
             return;
         }
-    
-        if (!Input.GetMouseButton(1)) return;
+        
+        if (Input.GetMouseButtonDown(0)) GetTile();
+        if (Input.GetMouseButton(1)) MoveCameraInBoundary();
+    }
 
-        // on right mouse button hold
-        MoveCameraInBoundary();
+    private void GetTile()
+    {
+        // This would cast rays only against collider in layer 8.
+        int layerMask = 1 << 8;
+        var cameraRay = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        
+        if (Physics.Raycast(cameraRay, out hit, Mathf.Infinity, layerMask))
+        {
+            Debug.Log($"Clicked on: {hit.collider.name}");
+        }
     }
 
     private void ChangeFov()
@@ -44,7 +54,7 @@ public class MouseManager : MonoBehaviour
 
     private void MoveCameraInBoundary()
     {
-        Vector3 pos = mainCamera.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
+        Vector3 pos = mainCamera.ScreenToViewportPoint(Input.mousePosition - _dragOrigin);
         Vector3 move = new Vector3(
             pos.x * speed,
             0,
