@@ -6,7 +6,10 @@ public class MouseManager : MonoBehaviour
     public Camera mainCamera;
     public float speed = 1.5f;
     public BoxCollider boxCollider;
-
+    
+    public float minFov = 15f;
+    public float maxFov = 90f;
+    public float scrollSensitivity = 10f;
 
     private void Start()
     {
@@ -17,6 +20,8 @@ public class MouseManager : MonoBehaviour
 
     private void LateUpdate()
     {
+        ChangeFov();
+        
         if (Input.GetMouseButtonDown(1))
         {
             dragOrigin = Input.mousePosition;
@@ -26,10 +31,18 @@ public class MouseManager : MonoBehaviour
         if (!Input.GetMouseButton(1)) return;
 
         // on right mouse button hold
-        moveCameraInBoundary();
+        MoveCameraInBoundary();
     }
 
-    private void moveCameraInBoundary()
+    private void ChangeFov()
+    {
+        float fov = mainCamera.fieldOfView;
+        fov += Input.GetAxis("Mouse ScrollWheel") * scrollSensitivity;
+        fov = Mathf.Clamp(fov, minFov, maxFov);
+        mainCamera.fieldOfView = fov;
+    } 
+
+    private void MoveCameraInBoundary()
     {
         Vector3 pos = mainCamera.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
         Vector3 move = new Vector3(
