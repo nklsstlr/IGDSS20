@@ -53,14 +53,12 @@ public class MouseManager : MonoBehaviour
         {
             case Perspective.Schräg:
             {
-                Debug.Log("Wollen jetzt drauf machen");
                 newPosition = new Vector3(actualPosition.x, 50, actualPosition.z);
                 newQuaternion = Quaternion.Euler(90.0f, 180.0f, 0.0f);
                 break;
             }
             case Perspective.Draufsicht:
             {
-                Debug.Log("Wollen jetzt schräg");
                 newPosition = new Vector3(actualPosition.x, 20, actualPosition.z);
                 newQuaternion = Quaternion.Euler(36.0f, 180.0f, 0.0f);
                 break;
