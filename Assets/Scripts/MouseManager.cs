@@ -99,9 +99,9 @@ public class MouseManager : MonoBehaviour
 
         Vector3 pos = mainCamera.ScreenToViewportPoint(Input.mousePosition - _dragOrigin);
         Vector3 move = new Vector3(
-            pos.x * speed,
+            -pos.x * speed,
             0,
-            pos.y * speed
+            -pos.y * speed
         );
 
         mainCamera.transform.Translate(move, Space.World);
