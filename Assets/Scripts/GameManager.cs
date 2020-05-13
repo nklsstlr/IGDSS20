@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
-using UnityEditor.VersionControl;
-using UnityEditorInternal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
