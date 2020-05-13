@@ -7,7 +7,7 @@ public class MouseManager : MonoBehaviour
     private Vector3 _dragOrigin;
     public Camera mainCamera;
     public float speed = 1.5f;
-    public BoxCollider boxCollider;
+    public BoxCollider boxCollider;    // boundaries can be changed by scaling the BoxCollider cube in the scene
 
     public float minFov = 15f;
     public float maxFov = 90f;
@@ -31,8 +31,8 @@ public class MouseManager : MonoBehaviour
     private void Start()
     {
         // Set initial position and rotation of camera
-        mainCamera.transform.position = new Vector3(0, 20, -30);
-        mainCamera.transform.rotation = Quaternion.Euler(36.0f, 180.0f, 0.0f);
+        mainCamera.transform.position = new Vector3(75, 30, 0);
+        mainCamera.transform.rotation = Quaternion.Euler(36.0f, 0.0f, 0.0f);
     }
 
     private void LateUpdate()
@@ -41,7 +41,7 @@ public class MouseManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0)) GetTile();
         if (Input.GetMouseButton(1)) MoveCameraInBoundary();
-        if (Input.GetMouseButtonDown(2)) ChangePerspective();
+        if (Input.GetMouseButtonDown(2)) ChangePerspective();    // Additional support of middle mouse button to switch camera perspective
     }
 
     private void ChangePerspective()
@@ -54,13 +54,13 @@ public class MouseManager : MonoBehaviour
             case Perspective.Schräg:
             {
                 newPosition = new Vector3(actualPosition.x, 50, actualPosition.z);
-                newQuaternion = Quaternion.Euler(90.0f, 180.0f, 0.0f);
+                newQuaternion = Quaternion.Euler(90.0f, 0.0f, 0.0f);
                 break;
             }
             case Perspective.Draufsicht:
             {
                 newPosition = new Vector3(actualPosition.x, 20, actualPosition.z);
-                newQuaternion = Quaternion.Euler(36.0f, 180.0f, 0.0f);
+                newQuaternion = Quaternion.Euler(36.0f, 0.0f, 0.0f);
                 break;
             }
         }
