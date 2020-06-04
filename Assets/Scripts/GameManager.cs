@@ -49,7 +49,21 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         PopulateResourceDictionary();
-        #region MapGeneration
+        GenerateMap();
+        FindNeighborsOfTile();
+        
+    }
+    
+    // Update is called once per frame
+    void Update()
+    {
+        HandleKeyboardInput();
+        UpdateInspectorNumbersForResources();
+    }
+    #endregion
+
+    private void GenerateMap()
+    {
         _tiles = Resources.LoadAll<GameObject>("Prefabs").ToList();
 
         int heightMapWidth = heightMap.width;
@@ -86,30 +100,9 @@ public class GameManager : MonoBehaviour
 
             }
         }
-        for (var z = 0; z < heightMapHeight; z++)
-        {
-            for (var x = 0; x < heightMapWidth; x++)
-            {
-                _tileMap[z, x]._neighborTiles = FindNeighborsOfTile(_tileMap[z, x]);
-                
-                //For Logging
-                Debug.Log($"Z: {z} X:{x}");
-                foreach (var neighbor in _tileMap[z,x]._neighborTiles)
-                {
-                    Debug.Log(neighbor._type + $"Z:{neighbor._coordinateHeight} X: {neighbor._coordinateWidth}");
-                }
-            }
-        }
-        #endregion MapGeneration
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        HandleKeyboardInput();
-        UpdateInspectorNumbersForResources();
-    }
-    #endregion
+    
     
     //Makes the resource dictionary usable by populating the values and keys
     void PopulateResourceDictionary()
@@ -207,7 +200,23 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    
+    private void FindNeighborsOfTile()
+    {
+        for (var z = 0; z < heightMap.height; z++)
+        {
+            for (var x = 0; x < heightMap.width; x++)
+            {
+                _tileMap[z, x]._neighborTiles = FindNeighborsOfTile(_tileMap[z, x]);
+                
+                //For Logging
+                Debug.Log($"Z: {z} X:{x}");
+                foreach (var neighbor in _tileMap[z,x]._neighborTiles)
+                {
+                    Debug.Log(neighbor._type + $"Z:{neighbor._coordinateHeight} X: {neighbor._coordinateWidth}");
+                }
+            }
+        }
+    }
     //Returns a list of all neighbors of a given tile
     private List<Tile> FindNeighborsOfTile(Tile t,string[] skip = null)
     {
