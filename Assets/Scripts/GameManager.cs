@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {    
+        #region MapGeneration
         _tiles = Resources.LoadAll<GameObject>("Prefabs").ToList();
 
         int heightMapWidth = heightMap.width;
@@ -68,9 +69,8 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
-        
-        
+        #endregion MapGeneration
+
     }
     //Returns a list of all neighbors of a given tile
     private List<Tile> FindNeighborsOfTile(Tile t,string[] skip = null)

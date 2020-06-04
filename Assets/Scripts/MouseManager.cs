@@ -15,18 +15,7 @@ public class MouseManager : MonoBehaviour
 
     private Perspective _lastPers = Perspective.Schräg;
 
-    private Perspective _actualPerspective
-    {
-        get
-        {
-            //Qauternion comparison is to complicated --> bad lastPers property...
-            if (_lastPers==Perspective.Schräg) //if(mainCamera.transform.rotation.x ==90)....
-                _lastPers = Perspective.Draufsicht;
-            else
-                _lastPers = Perspective.Schräg;
-            return _lastPers;
-        }
-    }
+    
 
     private void Start()
     {
@@ -42,6 +31,19 @@ public class MouseManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) GetTile();
         if (Input.GetMouseButton(1)) MoveCameraInBoundary();
         if (Input.GetMouseButtonDown(2)) ChangePerspective();    // Additional support of middle mouse button to switch camera perspective
+    }
+    
+    private Perspective _actualPerspective
+    {
+        get
+        {
+            //Qauternion comparison is to complicated --> bad lastPers property...
+            if (_lastPers==Perspective.Schräg) //if(mainCamera.transform.rotation.x ==90)....
+                _lastPers = Perspective.Draufsicht;
+            else
+                _lastPers = Perspective.Schräg;
+            return _lastPers;
+        }
     }
 
     private void ChangePerspective()
