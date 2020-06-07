@@ -83,8 +83,8 @@ public class MouseManager : MonoBehaviour
             Debug.Log($"Clicked on: {hit.collider.name}");
             
             Tile t = hit.collider.gameObject.GetComponent<Tile>() as Tile;
-            Debug.Log("Tile type: " + t._type);
-            gameManager.TileClicked(t);
+            Debug.Log("Tile type: " + t._type +"height: "+t._coordinateHeight+"width: "+t._coordinateWidth);
+            gameManager.TileClicked(t._coordinateHeight,t._coordinateWidth);
         }
     }
 

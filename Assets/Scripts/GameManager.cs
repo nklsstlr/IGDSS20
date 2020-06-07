@@ -77,10 +77,11 @@ public class GameManager : MonoBehaviour
 
     //Is called by MouseManager when a tile was clicked
     //Forwards the tile to the method for spawning buildings
-    public void TileClicked(Tile t)
+    public void TileClicked(int height, int width)
     {
-        Debug.Log("called");
-        //Tile t = _tileMap[height, width];
+        
+        Tile t = _tileMap[height, width];
+        Debug.Log("called"+t._type);
 
         PlaceBuildingOnTile(t);
     }
