@@ -16,6 +16,7 @@ public class Building : MonoBehaviour
     
     public float efficiency = 1f; // Calculated based on the surrounding tile types
     public float resourceGenerationInterval = 0f; // If operating at 100% efficiency, this is the time in seconds it takes for one production cycle to finish
+    public float resourceGenerationProgress = 0f; // This is the time spent in production so far
     public float outputCount; // The number of output resources per generation cycle(for example the Sawmill produces 2 planks at a time)
     
     public List<Tile.TileTypes> canBeBuiltOnTileTypes; // A restriction on which types of tiles it can be placed on

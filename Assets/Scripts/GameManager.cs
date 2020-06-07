@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     private float moneyIncome = 100f;
     //A representation of _resourcesInWarehouse, broken into individual floats. Only for display in inspector, will be removed and replaced with UI later
     [SerializeField]
+    private float _ResourcesInWarehouse_Money;
+    [SerializeField]
     private float _ResourcesInWarehouse_Fish;
     [SerializeField]
     private float _ResourcesInWarehouse_Wood;
@@ -145,16 +147,16 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // maybe infinite
+        // check progress, division by zero can happen, but is not a problem here, infinity is fine
         float productionEvery = building.resourceGenerationInterval / building.efficiency;
-        building.resourceGenerationInterval += 1f; // advance one cylce = 1 second
+        building.resourceGenerationProgress += 1f; // advance one cylce = 1 second
 
         bool hasInput = building.inputResources.All(x => HasResourceInWarehouse(x));
-        bool hasProgress = building.resourceGenerationInterval >= productionEvery;
+        bool hasProgress = building.resourceGenerationProgress >= productionEvery;
 
         if (hasInput && hasProgress)
         {
-            building.resourceGenerationInterval = 0f; // reset
+            building.resourceGenerationProgress = 0f; // reset
 
             // consume
             foreach (var res in building.inputResources)
@@ -205,14 +207,16 @@ public class GameManager : MonoBehaviour
                 Color pixelColor = heightMap.GetPixel(x, z);
                 var tileToRender = GetTile(pixelColor.maxColorComponent);
 
-                Object.Instantiate(tileToRender.Item1,
+                var newObject = Object.Instantiate(tileToRender.Item1,
                     new Vector3((x * xTranslate) + unevenSupport, pixelColor.maxColorComponent * heightFactor,
                         z * zTranslate), tileToRender.Item1.transform.rotation);
-                var tile = gameObject.AddComponent<Tile>();
+                
+                var tile = newObject.GetComponent<Tile>();
                 tile._type = tileToRender.Item2;
                 tile._coordinateHeight = z;
                 tile._coordinateWidth = x;
                 _tileMap[z, x] = tile;
+                Debug.Log("height z: "+tile._coordinateHeight+ "width x: "+tile._coordinateWidth + tile._type);
 
             }
         }
@@ -275,6 +279,7 @@ public class GameManager : MonoBehaviour
     //Updates the visual representation of the resource dictionary in the inspector. Only for debugging
     void UpdateInspectorNumbersForResources()
     {
+        _ResourcesInWarehouse_Money = _resourcesInWarehouse[ResourceTypes.Money];
         _ResourcesInWarehouse_Fish = _resourcesInWarehouse[ResourceTypes.Fish];
         _ResourcesInWarehouse_Wood = _resourcesInWarehouse[ResourceTypes.Wood];
         _ResourcesInWarehouse_Planks = _resourcesInWarehouse[ResourceTypes.Planks];
