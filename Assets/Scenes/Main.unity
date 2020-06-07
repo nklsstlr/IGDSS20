@@ -236,6 +236,7 @@ MonoBehaviour:
   mainCamera: {fileID: 512232609}
   speed: 1.5
   boxCollider: {fileID: 2075104153}
+  gameManager: {fileID: 1768092941}
   minFov: 15
   maxFov: 90
   scrollSensitivity: 10
@@ -438,6 +439,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd580981bf7ab5845976a690fd1035a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ResourcesInWarehouse_Fish: 0
+  _ResourcesInWarehouse_Wood: 0
+  _ResourcesInWarehouse_Planks: 0
+  _ResourcesInWarehouse_Wool: 0
+  _ResourcesInWarehouse_Clothes: 0
+  _ResourcesInWarehouse_Potato: 0
+  _ResourcesInWarehouse_Schnapps: 0
+  _buildingPrefabs:
+  - {fileID: 1424526405696502377, guid: 97161a4613375cd4baf749b53ad3b4f7, type: 3}
+  - {fileID: 7928269279142019111, guid: 433ba33e8d5275d418543cc8709cbe02, type: 3}
+  - {fileID: 6460319732534250535, guid: 307ec59b0352a0f4b9dee8da7249bd0f, type: 3}
+  - {fileID: 318283287415182579, guid: 8cbbf14a550bbee4aa7853b13a5566dd, type: 3}
+  - {fileID: 8669321371704317963, guid: f1d0002eab4d38948bf4efdf6993ac0f, type: 3}
+  - {fileID: 5719072535985938311, guid: 764755d1ac5e11c40af1ac0052c5130f, type: 3}
+  - {fileID: 8031321690098717850, guid: 408870bc0f70fb74d92c1fbbb7675e8c, type: 3}
+  _selectedBuildingPrefabIndex: 0
   heightMap: {fileID: 2800000, guid: 6c8b8b5dee9104b429f737ec1d927ec9, type: 3}
   heightFactor: 20
 --- !u!4 &1768092942

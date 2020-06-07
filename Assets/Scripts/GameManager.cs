@@ -12,7 +12,9 @@ public class GameManager : MonoBehaviour
     
     #region Resources
     private Dictionary<ResourceTypes, float> _resourcesInWarehouse = new Dictionary<ResourceTypes, float>(); //Holds a number of stored resources for every ResourceType
+    float ecoTime = 0f;
 
+    private float moneyIncome = 100f;
     //A representation of _resourcesInWarehouse, broken into individual floats. Only for display in inspector, will be removed and replaced with UI later
     [SerializeField]
     private float _ResourcesInWarehouse_Fish;
@@ -31,7 +33,7 @@ public class GameManager : MonoBehaviour
     #endregion
     
     #region Enumerations
-    public enum ResourceTypes { None, Fish, Wood, Planks, Wool, Clothes, Potato, Schnapps }; //Enumeration of all available resource types. Can be addressed from other scripts by calling GameManager.ResourceTypes
+    public enum ResourceTypes { None, Money, Fish, Wood, Planks, Wool, Clothes, Potato, Schnapps }; //Enumeration of all available resource types. Can be addressed from other scripts by calling GameManager.ResourceTypes
     #endregion
     
     #region Buildings
@@ -57,10 +59,123 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         HandleKeyboardInput();
         UpdateInspectorNumbersForResources();
+        StartEconomy();
+        
+
+        UpdateInspectorNumbersForResources();
+        
     }
+    
+    
+    
     #endregion
+
+    #region mouseEvents
+
+    //Is called by MouseManager when a tile was clicked
+    //Forwards the tile to the method for spawning buildings
+    public void TileClicked(Tile t)
+    {
+        Debug.Log("called");
+        //Tile t = _tileMap[height, width];
+
+        PlaceBuildingOnTile(t);
+    }
+
+    #endregion mouseEvents
+    #region economy
+    private void StartEconomy()
+    {
+        ecoTime += Time.deltaTime;
+        if (ecoTime >= 1f) // every second
+        {
+            ecoTime %= 1f; // reset
+            RunEconmyCycle();
+        }
+    }
+
+    private void RunEconmyCycle()
+    {
+        _resourcesInWarehouse[ResourceTypes.Money] += moneyIncome;
+
+        EconomyForBuildings();
+    }
+
+    private void EconomyForBuildings()
+    {
+        // Check all tiles for buildings
+        foreach (var tile in _tileMap)
+        {
+            if (tile._building)
+            {
+                float upkeep = tile._building.upkeep;
+                if (HasResourceInWarehouse(ResourceTypes.Money, upkeep))
+                {
+                    _resourcesInWarehouse[ResourceTypes.Money] -= upkeep;
+                    EconomyForProduction(tile._building);
+                }
+            }
+        }
+    }
+
+    //TODO: Check and Refactor
+    private void EconomyForProduction(Building building)
+    {
+        // calculate efficiency
+        if (building.efficiencyScalesWithNeighboringTiles != Tile.TileTypes.Empty)
+        {
+            int count = building.tile._neighborTiles.Count(x =>
+                x._type == building.efficiencyScalesWithNeighboringTiles &&
+                x._building == null);
+            if (count < building.minimumNeighbors)
+            {
+                building.efficiency = 0f;
+            }
+            else if (count >= building.maximumNeighbors)
+            {
+                building.efficiency = 1f;
+            }
+            else
+            {
+                building.efficiency = (float) count / building.maximumNeighbors;
+            }
+        }
+
+        // maybe infinite
+        float productionEvery = building.resourceGenerationInterval / building.efficiency;
+        building.resourceGenerationInterval += 1f; // advance one cylce = 1 second
+
+        bool hasInput = building.inputResources.All(x => HasResourceInWarehouse(x));
+        bool hasProgress = building.resourceGenerationInterval >= productionEvery;
+
+        if (hasInput && hasProgress)
+        {
+            building.resourceGenerationInterval = 0f; // reset
+
+            // consume
+            foreach (var res in building.inputResources)
+                _resourcesInWarehouse[res] -= 1;
+            // produce
+            _resourcesInWarehouse[building.outputResource] += building.outputCount;
+        }
+    }
+
+    // Checks if there is at least one material for the queried resource type in the warehouse
+    public bool HasResourceInWarehouse(ResourceTypes resource)
+    {
+        return _resourcesInWarehouse[resource] >= 1;
+    }
+
+    // Checks if there is sufficient material for the queried resource type in the warehouse
+    public bool HasResourceInWarehouse(ResourceTypes resource, float amount)
+    {
+        return _resourcesInWarehouse[resource] >= amount;
+    }
+
+    #endregion economy
 
     private void GenerateMap()
     {
@@ -107,14 +222,8 @@ public class GameManager : MonoBehaviour
     //Makes the resource dictionary usable by populating the values and keys
     void PopulateResourceDictionary()
     {
-        _resourcesInWarehouse.Add(ResourceTypes.None, 0);
-        _resourcesInWarehouse.Add(ResourceTypes.Fish, 0);
-        _resourcesInWarehouse.Add(ResourceTypes.Wood, 0);
-        _resourcesInWarehouse.Add(ResourceTypes.Planks, 0);
-        _resourcesInWarehouse.Add(ResourceTypes.Wool, 0);
-        _resourcesInWarehouse.Add(ResourceTypes.Clothes, 0);
-        _resourcesInWarehouse.Add(ResourceTypes.Potato, 0);
-        _resourcesInWarehouse.Add(ResourceTypes.Schnapps, 0);
+        foreach (var type in (ResourceTypes[])Enum.GetValues(typeof(ResourceTypes)))
+            _resourcesInWarehouse.Add(type, 0);
     }
 
     //Sets the index for the currently selected building prefab by checking key presses on the numbers 1 to 0
@@ -180,24 +289,35 @@ public class GameManager : MonoBehaviour
         return _resourcesInWarehouse[resource] >= 1;
     }
 
-    //Is called by MouseManager when a tile was clicked
-    //Forwards the tile to the method for spawning buildings
-    public void TileClicked(int height, int width)
-    {
-        Tile t = _tileMap[height, width];
-
-        PlaceBuildingOnTile(t);
-    }
-
     //Checks if the currently selected building type can be placed on the given tile and then instantiates an instance of the prefab
     private void PlaceBuildingOnTile(Tile t)
     {
+        Debug.Log("index"+_selectedBuildingPrefabIndex);
+        Debug.Log("length"+_buildingPrefabs.Length);
         //if there is building prefab for the number input
         if (_selectedBuildingPrefabIndex < _buildingPrefabs.Length)
         {
-            //TODO: check if building can be placed and then istantiate it
+            Building prefab = _buildingPrefabs[_selectedBuildingPrefabIndex].GetComponent<Building>();
+            if (BuildingCanBeBuiltOnTile(prefab, t))
+            {
+                // Insantiate with parent
+                GameObject newBuildingObject = Instantiate(_buildingPrefabs[_selectedBuildingPrefabIndex], t.gameObject.transform);
+                
+                Building b = newBuildingObject.GetComponent<Building>();
+                t._building = b;
+                b.tile = t;
 
+                // consume build costs
+                _resourcesInWarehouse[ResourceTypes.Money] -= prefab.buildCostMoney;
+                _resourcesInWarehouse[ResourceTypes.Planks] -= prefab.buildCostPlanks;
+            }
         }
+    }
+    private bool BuildingCanBeBuiltOnTile(Building building, Tile tile)
+    {
+        return tile._building == null && building.canBeBuiltOnTileTypes.Contains(tile._type) &&
+               HasResourceInWarehouse(ResourceTypes.Money, building.buildCostMoney) &&
+               HasResourceInWarehouse(ResourceTypes.Planks, building.buildCostPlanks);
     }
     
     private void FindNeighborsOfTile()
@@ -209,11 +329,11 @@ public class GameManager : MonoBehaviour
                 _tileMap[z, x]._neighborTiles = FindNeighborsOfTile(_tileMap[z, x]);
                 
                 //For Logging
-                Debug.Log($"Z: {z} X:{x}");
-                foreach (var neighbor in _tileMap[z,x]._neighborTiles)
-                {
-                    Debug.Log(neighbor._type + $"Z:{neighbor._coordinateHeight} X: {neighbor._coordinateWidth}");
-                }
+                // Debug.Log($"Z: {z} X:{x}");
+                // foreach (var neighbor in _tileMap[z,x]._neighborTiles)
+                // {
+                //     Debug.Log(neighbor._type + $"Z:{neighbor._coordinateHeight} X: {neighbor._coordinateWidth}");
+                // }
             }
         }
     }

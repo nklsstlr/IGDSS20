@@ -8,6 +8,7 @@ public class MouseManager : MonoBehaviour
     public Camera mainCamera;
     public float speed = 1.5f;
     public BoxCollider boxCollider;    // boundaries can be changed by scaling the BoxCollider cube in the scene
+    public GameManager gameManager;
 
     public float minFov = 15f;
     public float maxFov = 90f;
@@ -80,6 +81,10 @@ public class MouseManager : MonoBehaviour
         if (Physics.Raycast(cameraRay, out hit, Mathf.Infinity, layerMask))
         {
             Debug.Log($"Clicked on: {hit.collider.name}");
+            
+            Tile t = hit.collider.gameObject.GetComponent<Tile>() as Tile;
+            Debug.Log("Tile type: " + t._type);
+            gameManager.TileClicked(t);
         }
     }
 
