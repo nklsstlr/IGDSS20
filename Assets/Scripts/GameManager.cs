@@ -372,7 +372,7 @@ public class GameManager : MonoBehaviour
      Tuple<GameObject,Tile.TileTypes> GetTile(float colorValue)
     {
         if (colorValue == 0f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("WaterTile")),Tile.TileTypes.Water);
-        else if (colorValue > 0f && colorValue <= 0.2f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("SandTile")),Tile.TileTypes.Water);
+        else if (colorValue > 0f && colorValue <= 0.2f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("SandTile")),Tile.TileTypes.Sand);
         else if (colorValue > 0.2f && colorValue <= 0.4f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("GrassTile")),Tile.TileTypes.Grass);
         else if (colorValue > 0.4f && colorValue <= 0.6f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("ForestTile")),Tile.TileTypes.Forest);
         else if (colorValue > 0.6f && colorValue <= 0.8f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("StoneTile")),Tile.TileTypes.Stone);
