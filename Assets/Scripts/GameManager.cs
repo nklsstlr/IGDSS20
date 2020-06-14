@@ -161,7 +161,7 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    private void EconomyForBuilding(Building building)
+    private void EconomyForBuilding(ProductionBuilding building)
     {
         // calculate efficiency
         if (building.efficiencyScalesWithNeighboringTiles != Tile.TileTypes.Empty)
@@ -351,13 +351,13 @@ public class GameManager : MonoBehaviour
         //if there is building prefab for the number input
         if (_selectedBuildingPrefabIndex < _buildingPrefabs.Length)
         {
-            Building prefab = _buildingPrefabs[_selectedBuildingPrefabIndex].GetComponent<Building>();
+            ProductionBuilding prefab = _buildingPrefabs[_selectedBuildingPrefabIndex].GetComponent<ProductionBuilding>();
             if (BuildingCanBeBuiltOnTile(prefab, t))
             {
                 // Insantiate with parent
                 GameObject newBuildingObject = Instantiate(_buildingPrefabs[_selectedBuildingPrefabIndex], t.gameObject.transform);
                 
-                Building b = newBuildingObject.GetComponent<Building>();
+                ProductionBuilding b = newBuildingObject.GetComponent<ProductionBuilding>();
                 t._building = b;
                 b.tile = t;
 
@@ -367,7 +367,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    private bool BuildingCanBeBuiltOnTile(Building building, Tile tile)
+    private bool BuildingCanBeBuiltOnTile(ProductionBuilding building, Tile tile)
     {
         return tile._building == null && building.canBeBuiltOnTileTypes.Contains(tile._type) &&
                HasResourceInWarehouse(ResourceTypes.Money, building.buildCostMoney) &&
