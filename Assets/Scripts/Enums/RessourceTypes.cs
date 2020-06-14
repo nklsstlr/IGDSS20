@@ -1,0 +1,1 @@
+﻿public enum ResourceTypes { None, Money, Fish, Wood, Planks, Wool, Clothes, Potato, Schnapps }; //Enumeration of all available resource types. Can be addressed from other scripts by calling GameManager.ResourceTypes

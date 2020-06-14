@@ -14,44 +14,21 @@ public class GameManager : MonoBehaviour
     private List<GameObject> _tiles = new List<GameObject>();
     #endregion
     
-    #region Resources
-    private Dictionary<ResourceTypes, float> _resourcesInWarehouse = new Dictionary<ResourceTypes, float>(); //Holds a number of stored resources for every ResourceType
-    float ecoTime = 0f;
-
-    private float moneyIncome = 100f;
-    //A representation of _resourcesInWarehouse, broken into individual floats. Only for display in inspector, will be removed and replaced with UI later
-    [SerializeField]
-    private float _ResourcesInWarehouse_Money;
-    [SerializeField]
-    private float _ResourcesInWarehouse_Fish;
-    [SerializeField]
-    private float _ResourcesInWarehouse_Wood;
-    [SerializeField]
-    private float _ResourcesInWarehouse_Planks;
-    [SerializeField]
-    private float _ResourcesInWarehouse_Wool;
-    [SerializeField]
-    private float _ResourcesInWarehouse_Clothes;
-    [SerializeField]
-    private float _ResourcesInWarehouse_Potato;
-    [SerializeField]
-    private float _ResourcesInWarehouse_Schnapps;
-    #endregion
-    
-    #region Enumerations
-    public enum ResourceTypes { None, Money, Fish, Wood, Planks, Wool, Clothes, Potato, Schnapps }; //Enumeration of all available resource types. Can be addressed from other scripts by calling GameManager.ResourceTypes
-    #endregion
     
     #region Buildings
     public GameObject[] _buildingPrefabs; //References to the building prefabs
     public int _selectedBuildingPrefabIndex = 0; //The current index used for choosing a prefab to spawn from the _buildingPrefabs list
+    private  Store _store;
+    private float ecoTime= 0f;
+    private float moneyIncome = 100f;
+
     #endregion
     
     #region MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PopulateResourceDictionary();
+        _store = new Store();
         GenerateMap();
         FindNeighborsOfTile();
     }
@@ -60,12 +37,49 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         HandleKeyboardInput();
-        UpdateInspectorNumbersForResources();
+        _store.UpdateInspectorNumbersForResources();
+        
         StartEconomy();
     }
 
     #endregion
+    
+    private void StartEconomy()
+    {
+        ecoTime += Time.deltaTime;
+        if (ecoTime >= 1f) // every second
+        {
+            ecoTime %= 1f; // reset
+            RunEconmyCycle();
+        }
+    }
 
+    private void RunEconmyCycle()
+    {
+        _store.AddResource(ResourceTypes.Money,moneyIncome);
+        EconomyForBuildings();
+    }
+
+    private void EconomyForBuildings()
+    {
+        // Check all tiles for buildings
+        foreach (var tile in _tileMap)
+        {
+            if (tile._building)
+            {
+                float upkeep = tile._building.upkeep;
+               
+                if (_store.HasResourceInWarehouse(ResourceTypes.Money,upkeep))
+                {
+                    _store.RemoveResource(ResourceTypes.Money,upkeep);
+                    
+                    tile._building.EconomyForBuilding(_store,tile._neighborTiles);
+                    
+                }
+            }
+        }
+    }
+    
     #region Input
 
     //Is called by MouseManager when a tile was clicked
@@ -126,121 +140,8 @@ public class GameManager : MonoBehaviour
 
     #endregion input
     
-    #region economy
-    private void StartEconomy()
-    {
-        ecoTime += Time.deltaTime;
-        if (ecoTime >= 1f) // every second
-        {
-            ecoTime %= 1f; // reset
-            RunEconmyCycle();
-        }
-    }
-
-    private void RunEconmyCycle()
-    {
-        _resourcesInWarehouse[ResourceTypes.Money] += moneyIncome;
-
-        EconomyForBuildings();
-    }
-
-    private void EconomyForBuildings()
-    {
-        // Check all tiles for buildings
-        foreach (var tile in _tileMap)
-        {
-            if (tile._building)
-            {
-                float upkeep = tile._building.upkeep;
-                if (HasResourceInWarehouse(ResourceTypes.Money, upkeep))
-                {
-                    _resourcesInWarehouse[ResourceTypes.Money] -= upkeep;
-                    EconomyForBuilding(tile._building);
-                }
-            }
-        }
-    }
     
-    private void EconomyForBuilding(ProductionBuilding building)
-    {
-        // calculate efficiency
-        if (building.efficiencyScalesWithNeighboringTiles != Tile.TileTypes.Empty)
-        {
-            int neighborCount = building.tile._neighborTiles.Count(x =>
-                x._type == building.efficiencyScalesWithNeighboringTiles &&
-                x._building == null);
-            if (neighborCount < building.minimumNeighbors)
-            {
-                building.efficiency = 0f;
-            }
-            else if (neighborCount >= building.maximumNeighbors)
-            {
-                building.efficiency = 1f;
-            }
-            else
-            {
-                building.efficiency = (float) neighborCount / building.maximumNeighbors;
-            }
-        }
-
-       
-        float generationInterval = building.resourceGenerationInterval / building.efficiency;
-        building.resourceGenerationProgress += 1f; //add 1 second each cycle
-
-        bool hasInput = building.inputResources.All(x => HasResourceInWarehouse(x));
-        bool hasProgress = building.resourceGenerationProgress >= generationInterval;
-
-        if (hasInput && hasProgress)
-        {
-            building.resourceGenerationProgress = 0f; // reset
-
-            // input
-            foreach (var res in building.inputResources)
-                _resourcesInWarehouse[res] -= 1;
-            // output
-            _resourcesInWarehouse[building.outputResource] += building.outputCount;
-        }
-    }
-
-    // Checks if there is at least one material for the queried resource type in the warehouse
-    public bool HasResourceInWarehouse(ResourceTypes resource)
-    {
-        return _resourcesInWarehouse[resource] >= 1;
-    }
-
-    // Checks if there is sufficient material for the queried resource type in the warehouse
-    public bool HasResourceInWarehouse(ResourceTypes resource, float amount)
-    {
-        return _resourcesInWarehouse[resource] >= amount;
-    }
     
-    //Makes the resource dictionary usable by populating the values and keys
-    void PopulateResourceDictionary()
-    {
-        foreach (var type in (ResourceTypes[])Enum.GetValues(typeof(ResourceTypes)))
-            _resourcesInWarehouse.Add(type, 0);
-    }
-    
-    //Updates the visual representation of the resource dictionary in the inspector. Only for debugging
-    void UpdateInspectorNumbersForResources()
-    {
-        _ResourcesInWarehouse_Money = _resourcesInWarehouse[ResourceTypes.Money];
-        _ResourcesInWarehouse_Fish = _resourcesInWarehouse[ResourceTypes.Fish];
-        _ResourcesInWarehouse_Wood = _resourcesInWarehouse[ResourceTypes.Wood];
-        _ResourcesInWarehouse_Planks = _resourcesInWarehouse[ResourceTypes.Planks];
-        _ResourcesInWarehouse_Wool = _resourcesInWarehouse[ResourceTypes.Wool];
-        _ResourcesInWarehouse_Clothes = _resourcesInWarehouse[ResourceTypes.Clothes];
-        _ResourcesInWarehouse_Potato = _resourcesInWarehouse[ResourceTypes.Potato];
-        _ResourcesInWarehouse_Schnapps = _resourcesInWarehouse[ResourceTypes.Schnapps];
-    }
-    
-    //Checks if there is at least one material for the queried resource type in the warehouse
-    public bool HasResourceInWarehoues(ResourceTypes resource)
-    {
-        return _resourcesInWarehouse[resource] >= 1;
-    }
-
-    #endregion economy
     
     # region generateMap
     
@@ -358,20 +259,20 @@ public class GameManager : MonoBehaviour
                 GameObject newBuildingObject = Instantiate(_buildingPrefabs[_selectedBuildingPrefabIndex], t.gameObject.transform);
                 
                 ProductionBuilding b = newBuildingObject.GetComponent<ProductionBuilding>();
-                t._building = b;
-                b.tile = t;
+                t._building = b;//TODO überprüfen ob referenz gesetzt wird
+                
 
-                // consume build costs
-                _resourcesInWarehouse[ResourceTypes.Money] -= prefab.buildCostMoney;
-                _resourcesInWarehouse[ResourceTypes.Planks] -= prefab.buildCostPlanks;
+                _store.RemoveResource(ResourceTypes.Money,prefab.buildCostMoney);
+                _store.RemoveResource(ResourceTypes.Planks,prefab.buildCostPlanks);
+                
             }
         }
     }
     private bool BuildingCanBeBuiltOnTile(ProductionBuilding building, Tile tile)
     {
         return tile._building == null && building.canBeBuiltOnTileTypes.Contains(tile._type) &&
-               HasResourceInWarehouse(ResourceTypes.Money, building.buildCostMoney) &&
-               HasResourceInWarehouse(ResourceTypes.Planks, building.buildCostPlanks);
+               _store.HasResourceInWarehouse(ResourceTypes.Money, building.buildCostMoney) &&
+               _store.HasResourceInWarehouse(ResourceTypes.Planks, building.buildCostPlanks);
     }
     #endregion gamePlay
     

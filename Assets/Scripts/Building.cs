@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class Building : MonoBehaviour
 {
+    public BuildingTypes type; // The name of the building
+    public List<Tile.TileTypes> canBeBuiltOnTileTypes; // A restriction on which types of tiles it can be placed on
+
     #region Manager References
     JobManager _jobManager; //Reference to the JobManager
     #endregion
@@ -14,6 +17,8 @@ public abstract class Building : MonoBehaviour
 
     #region Jobs
     public List<Job> _jobs; // List of all available Jobs. Is populated in Start()
+   
+
     #endregion
     
 
