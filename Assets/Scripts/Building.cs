@@ -11,7 +11,9 @@ public abstract class Building : MonoBehaviour
     public float upkeep; // The money cost per minute
 
     #region Manager References
-    JobManager _jobManager; //Reference to the JobManager
+    public JobManager _jobManager; //Reference to the JobManager
+    public GameManager _GameManager;
+
     #endregion
     
     #region Workers

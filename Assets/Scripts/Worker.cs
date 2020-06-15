@@ -4,12 +4,12 @@ using UnityEngine.Experimental.Audio;
 public class Worker : MonoBehaviour
 {
     #region Manager References
-    JobManager _jobManager; //Reference to the JobManager
-    GameManager _gameManager;//Reference to the GameManager
+    public JobManager _jobManager; //Reference to the JobManager
+    public GameManager _gameManager;//Reference to the GameManager
     #endregion
 
     public float _age; // The age of this worker
-    public float _happiness; // The happiness of this worker
+    private bool _beingSupplied = true;
     private float _ageTime = 0f;
 
     // Start is called before the first frame update
@@ -35,8 +35,7 @@ public class Worker : MonoBehaviour
         {
             _ageTime %= 1f; // reset
             _age++;
-            Consume();
-            CalcBeHappy();
+            _beingSupplied= Consume();
         }
 
         if (_age > 14)
@@ -54,13 +53,21 @@ public class Worker : MonoBehaviour
             Die();
         }
     }
+    
 
-    private void CalcBeHappy()
+    public float GetHappiness()
     {
-        throw new System.NotImplementedException();
+        var gaMa = _gameManager;
+        var s = gaMa._store;
+        var happy = 0f;
+        if (_jobManager.DoIHaveAJob(this))
+            happy += 0.5f;
+        if(_beingSupplied)
+            happy += 0.5f;
+        return happy;
     }
 
-    private void Consume()
+    private bool Consume()
     {
         throw new System.NotImplementedException();
     }

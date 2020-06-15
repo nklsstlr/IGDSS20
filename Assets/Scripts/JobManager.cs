@@ -49,5 +49,10 @@ public class JobManager : MonoBehaviour
         _unoccupiedWorkers.Remove(w);
     }
 
+    public bool DoIHaveAJob(Worker worker2find)
+    {
+        return _unoccupiedWorkers.Contains(worker2find);
+    }
+
     #endregion
 }
