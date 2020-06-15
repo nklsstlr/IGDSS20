@@ -5,6 +5,10 @@ public abstract class Building : MonoBehaviour
 {
     public BuildingTypes type; // The name of the building
     public List<Tile.TileTypes> canBeBuiltOnTileTypes; // A restriction on which types of tiles it can be placed on
+    
+    public float buildCostMoney; // placement money cost
+    public float buildCostPlanks; // placement planks cost
+    public float upkeep; // The money cost per minute
 
     #region Manager References
     JobManager _jobManager; //Reference to the JobManager
@@ -43,4 +47,9 @@ public abstract class Building : MonoBehaviour
         _workers.Remove(w);
     }
     #endregion
+
+    public abstract void EconomyForBuilding(Store store, List<Tile> neighborTiles);
+    public abstract float CalcEfficiency();
+    
+
 }

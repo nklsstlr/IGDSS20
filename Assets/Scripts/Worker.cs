@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Experimental.Audio;
 
 public class Worker : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class Worker : MonoBehaviour
 
     public float _age; // The age of this worker
     public float _happiness; // The happiness of this worker
+    private float _ageTime = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +30,15 @@ public class Worker : MonoBehaviour
         //When becoming of age, the worker enters the job market, and leaves it when retiring.
         //Eventually, the worker dies and leaves an empty space in his home. His Job occupation is also freed up.
 
+        _ageTime += Time.deltaTime;
+        if (!(_ageTime >= 15f)) return; // every 15 seconds
+        {
+            _ageTime %= 1f; // reset
+            _age++;
+            Consume();
+            CalcBeHappy();
+        }
+
         if (_age > 14)
         {
             BecomeOfAge();
@@ -42,6 +53,16 @@ public class Worker : MonoBehaviour
         {
             Die();
         }
+    }
+
+    private void CalcBeHappy()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    private void Consume()
+    {
+        throw new System.NotImplementedException();
     }
 
 

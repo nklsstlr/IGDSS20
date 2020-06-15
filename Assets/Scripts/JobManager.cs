@@ -30,6 +30,7 @@ public class JobManager : MonoBehaviour
     {
         if (_unoccupiedWorkers.Count > 0)
         {
+            
 
             //TODO: What should be done with unoccupied workers?
 

@@ -195,12 +195,6 @@ public class GameManager : MonoBehaviour
             {
                 _tileMap[z, x]._neighborTiles = FindNeighborsOfTile(_tileMap[z, x]);
                 
-                //For Logging
-                // Debug.Log($"Z: {z} X:{x}");
-                // foreach (var neighbor in _tileMap[z,x]._neighborTiles)
-                // {
-                //     Debug.Log(neighbor._type + $"Z:{neighbor._coordinateHeight} X: {neighbor._coordinateWidth}");
-                // }
             }
         }
     }
@@ -252,13 +246,13 @@ public class GameManager : MonoBehaviour
         //if there is building prefab for the number input
         if (_selectedBuildingPrefabIndex < _buildingPrefabs.Length)
         {
-            ProductionBuilding prefab = _buildingPrefabs[_selectedBuildingPrefabIndex].GetComponent<ProductionBuilding>();
+            Building prefab = _buildingPrefabs[_selectedBuildingPrefabIndex].GetComponent<Building>();
             if (BuildingCanBeBuiltOnTile(prefab, t))
             {
                 // Insantiate with parent
                 GameObject newBuildingObject = Instantiate(_buildingPrefabs[_selectedBuildingPrefabIndex], t.gameObject.transform);
                 
-                ProductionBuilding b = newBuildingObject.GetComponent<ProductionBuilding>();
+                Building b = newBuildingObject.GetComponent<Building>();
                 t._building = b;//TODO überprüfen ob referenz gesetzt wird
                 
 
@@ -268,7 +262,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    private bool BuildingCanBeBuiltOnTile(ProductionBuilding building, Tile tile)
+    private bool BuildingCanBeBuiltOnTile(Building building, Tile tile)
     {
         return tile._building == null && building.canBeBuiltOnTileTypes.Contains(tile._type) &&
                _store.HasResourceInWarehouse(ResourceTypes.Money, building.buildCostMoney) &&
