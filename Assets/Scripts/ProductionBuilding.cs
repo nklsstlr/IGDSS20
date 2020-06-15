@@ -31,8 +31,6 @@ public class ProductionBuilding : Building
 
     #endregion
     
-    
-    
     #region economy
     
     public void EconomyForBuilding(Store store,List<Tile>neighborTiles)
