@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     #region Buildings
     public GameObject[] _buildingPrefabs; //References to the building prefabs
     public int _selectedBuildingPrefabIndex = 0; //The current index used for choosing a prefab to spawn from the _buildingPrefabs list
-    private  Store _store;
+    public  Store _store;
     private float ecoTime= 0f;
     private float moneyIncome = 100f;
 
@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _store = new Store();
+        
         GenerateMap();
         FindNeighborsOfTile();
     }
@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         HandleKeyboardInput();
-        _store.UpdateInspectorNumbersForResources();
+        
         
         StartEconomy();
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Store : MonoBehaviour
@@ -24,14 +25,9 @@ public class Store : MonoBehaviour
     private float _ResourcesInWarehouse_Potato;
     [SerializeField]
     private float _ResourcesInWarehouse_Schnapps;
-    
-    private Dictionary<ResourceTypes, float> _resourcesInWarehouse = new Dictionary<ResourceTypes, float>(); //Holds a number of stored resources for every ResourceType
 
-    public Store()
-    {
-        foreach (var type in (ResourceTypes[])Enum.GetValues(typeof(ResourceTypes)))
-            _resourcesInWarehouse.Add(type, 0);
-    }
+    private Dictionary<ResourceTypes, float> _resourcesInWarehouse = new Dictionary<ResourceTypes, float>(); //Holds a number of stored resources for every ResourceType
+    
     
     public void AddResource(ResourceTypes resource, float amount)
     {
@@ -73,12 +69,14 @@ public class Store : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        foreach (var type in (ResourceTypes[])Enum.GetValues(typeof(ResourceTypes)))
+            _resourcesInWarehouse.Add(type, 0);
+        Debug.Log("called start method");
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        UpdateInspectorNumbersForResources();
     }
 }
