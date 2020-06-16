@@ -549,6 +549,7 @@ MonoBehaviour:
   - {fileID: 8031321690098717850, guid: 4ba15b80ed14d4b40a7cb8e8d4dd0a0d, type: 3}
   _selectedBuildingPrefabIndex: 0
   _store: {fileID: 1745441312}
+  _jobManager: {fileID: 1214602601}
 --- !u!4 &1768092942
 Transform:
   m_ObjectHideFlags: 0
