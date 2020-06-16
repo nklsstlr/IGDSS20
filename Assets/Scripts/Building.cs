@@ -13,6 +13,7 @@ public abstract class Building : MonoBehaviour
     #region Manager References
     public JobManager _jobManager; //Reference to the JobManager
     public GameManager _GameManager;
+    public Store _Store;
 
     #endregion
     
@@ -25,6 +26,7 @@ public abstract class Building : MonoBehaviour
     
     #endregion
     
+
     // Start is called before the first frame update
     void Start()
     {

@@ -6,9 +6,7 @@ public class JobManager : MonoBehaviour
 
     private List<Job> _availableJobs = new List<Job>();
     public List<Worker> _unoccupiedWorkers = new List<Worker>();
-
-
-
+    
     #region MonoBehaviour
     // Start is called before the first frame update
     void Start()
@@ -51,7 +49,7 @@ public class JobManager : MonoBehaviour
 
     public bool DoIHaveAJob(Worker worker2find)
     {
-        return _unoccupiedWorkers.Contains(worker2find);
+        return _unoccupiedWorkers.Contains(worker2find);//TODO Funktioniert das?
     }
 
     #endregion

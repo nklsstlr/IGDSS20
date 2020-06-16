@@ -13,6 +13,7 @@ public class HousingBuilding : Building
     // Start is called before the first frame update
     void Start()
     {
+        
         _workers.Add(SpawnWorker());
         _workers.Add(SpawnWorker());
         
@@ -25,6 +26,7 @@ public class HousingBuilding : Building
         var worker =  characterGameObj.GetComponent<Worker>();
         worker._jobManager = _jobManager;
         worker._gameManager = _GameManager;
+        worker._store = _Store;
         
         return worker;
 
@@ -47,7 +49,7 @@ public class HousingBuilding : Building
         {
             _spawnTime %= 1f; // reset
         }
-        SpawnWorker();
+        _workers.Add(SpawnWorker());
     }
 
     public override void EconomyForBuilding(Store store, List<Tile> neighborTiles)

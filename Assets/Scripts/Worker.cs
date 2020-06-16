@@ -6,6 +6,7 @@ public class Worker : MonoBehaviour
     #region Manager References
     public JobManager _jobManager; //Reference to the JobManager
     public GameManager _gameManager;//Reference to the GameManager
+    public Store _store;//Reference to the Store
     #endregion
 
     public float _age; // The age of this worker
@@ -64,12 +65,21 @@ public class Worker : MonoBehaviour
             happy += 0.5f;
         if(_beingSupplied)
             happy += 0.5f;
-        return happy;
+        return happy;//TODO: evtl komplexer machen also abhängig von ressourcen. falls hier 0 ist wird kein neuer worker gespawnt
     }
 
     private bool Consume()
     {
-        throw new System.NotImplementedException();
+        if (!(_store.HasResourceInWarehouse(ResourceTypes.Schnapps, 0.1f) &&
+            _store.HasResourceInWarehouse(ResourceTypes.Fish, 0.1f) &&
+            _store.HasResourceInWarehouse(ResourceTypes.Clothes, 0.1f)))
+            return false; //TODO mehr komplexität, abhängig machen was konsumeirt wurde --> hapiness
+        
+        _store.RemoveResource(ResourceTypes.Fish, 0.1f);
+        _store.RemoveResource(ResourceTypes.Schnapps, 0.1f);
+        _store.RemoveResource(ResourceTypes.Clothes, 0.1f);
+        
+        return true;
     }
 
 

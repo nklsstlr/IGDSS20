@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public  Store _store;
     private float ecoTime= 0f;
     private float moneyIncome = 100f;
+    public JobManager _jobManager; //Reference to the JobManager
 
     #endregion
     
@@ -57,6 +58,19 @@ public class GameManager : MonoBehaviour
     private void RunEconmyCycle()
     {
         _store.AddResource(ResourceTypes.Money,moneyIncome);
+        
+        //TODO: Ulala ob das funkt:
+        // Check all tiles for buildings
+        float workersIncome = 0f;
+        foreach (var tile in _tileMap)
+        {
+            if (tile._building)
+            {
+                workersIncome = tile._building._workers.Count * 10;
+            }
+        }
+        _store.AddResource(ResourceTypes.Money,workersIncome);
+        
         EconomyForBuildings();
     }
 
@@ -135,6 +149,18 @@ public class GameManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             _selectedBuildingPrefabIndex = 9;
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            //CHEAT
+            _store.AddResource(ResourceTypes.Money,1000);
+            _store.AddResource(ResourceTypes.Planks,1000);
+            _store.AddResource(ResourceTypes.Potato,1000);
+            _store.AddResource(ResourceTypes.Schnapps,1000);
+            _store.AddResource(ResourceTypes.Wood,1000);
+            _store.AddResource(ResourceTypes.Wool,1000);
+            _store.AddResource(ResourceTypes.Clothes,1000);
+            _store.AddResource(ResourceTypes.Fish,1000);
         }
     }
 
@@ -254,6 +280,9 @@ public class GameManager : MonoBehaviour
                 
                 Building b = newBuildingObject.GetComponent<Building>();
                 t._building = b;//TODO überprüfen ob referenz gesetzt wird
+                b._jobManager = _jobManager;
+                b._GameManager = this;
+                b._Store = _store;
                 
 
                 _store.RemoveResource(ResourceTypes.Money,prefab.buildCostMoney);
