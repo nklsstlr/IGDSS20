@@ -10,7 +10,7 @@ public class Worker : MonoBehaviour
     #endregion
 
     public float _age; // The age of this worker
-    private bool _beingSupplied = true;
+    private float _consumeHappiness = 0f;
     private float _ageTime = 0f;
 
     // Start is called before the first frame update
@@ -36,7 +36,8 @@ public class Worker : MonoBehaviour
         {
             _ageTime %= 1f; // reset
             _age++;
-            _beingSupplied= Consume();
+            _consumeHappiness = 0;
+            Consume();
         }
 
         if (_age > 14)
@@ -61,25 +62,43 @@ public class Worker : MonoBehaviour
         var gaMa = _gameManager;
         var s = gaMa._store;
         var happy = 0f;
-        if (_jobManager.DoIHaveAJob(this))
+        
+        if (_jobManager.DoIHaveAJob(this) && isAdultAge(_age)) {
             happy += 0.5f;
-        if(_beingSupplied)
-            happy += 0.5f;
-        return happy;//TODO: evtl komplexer machen also abhängig von ressourcen. falls hier 0 ist wird kein neuer worker gespawnt
+        } else if (isAdultAge(_age) && !_jobManager.DoIHaveAJob(this)) {
+            happy += 0.2f;
+        }
+       
+        if (!isAdultAge(_age)) {
+            happy += 0.3f;
+        }
+
+        happy += _consumeHappiness;
+
+        return happy;
     }
 
-    private bool Consume()
+    public bool isAdultAge(float age)
     {
-        if (!(_store.HasResourceInWarehouse(ResourceTypes.Schnapps, 0.1f) &&
-            _store.HasResourceInWarehouse(ResourceTypes.Fish, 0.1f) &&
-            _store.HasResourceInWarehouse(ResourceTypes.Clothes, 0.1f)))
-            return false; //TODO mehr komplexität, abhängig machen was konsumeirt wurde --> hapiness
-        
-        _store.RemoveResource(ResourceTypes.Fish, 0.1f);
-        _store.RemoveResource(ResourceTypes.Schnapps, 0.1f);
-        _store.RemoveResource(ResourceTypes.Clothes, 0.1f);
-        
-        return true;
+        return age >= 14 && age <=64 ? true : false;
+    }
+
+    private void Consume()
+    {
+        if (_store.HasResourceInWarehouse(ResourceTypes.Schnapps, 0.1f)) {
+            _store.RemoveResource(ResourceTypes.Schnapps, 0.1f);
+            _consumeHappiness += 0.166f;
+        }
+
+        if (_store.HasResourceInWarehouse(ResourceTypes.Fish, 0.1f)) {
+            _store.RemoveResource(ResourceTypes.Fish, 0.1f);
+            _consumeHappiness += 0.166f;
+        }
+
+        if (_store.HasResourceInWarehouse(ResourceTypes.Clothes, 0.1f)) {
+            _store.RemoveResource(ResourceTypes.Clothes, 0.1f);
+            _consumeHappiness += 0.166f;
+        }
     }
 
 

@@ -65,8 +65,10 @@ public class GameManager : MonoBehaviour
         foreach (var tile in _tileMap)
         {
             if (tile._building)
-            {
-                workersIncome = tile._building._workers.Count * 10;
+            {   
+                foreach(Worker worker in tile._building._workers) {
+                    workersIncome = worker.isAdultAge(worker._age) ? workersIncome += 20 : workersIncome += 10;
+                }
             }
         }
         _store.AddResource(ResourceTypes.Money,workersIncome);

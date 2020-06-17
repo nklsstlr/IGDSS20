@@ -29,7 +29,7 @@ public class JobManager : MonoBehaviour
         if (_unoccupiedWorkers.Count > 0)
         {
             
-
+            
             //TODO: What should be done with unoccupied workers?
 
         }
@@ -49,7 +49,7 @@ public class JobManager : MonoBehaviour
 
     public bool DoIHaveAJob(Worker worker2find)
     {
-        return _unoccupiedWorkers.Contains(worker2find);//TODO Funktioniert das?
+        return !_unoccupiedWorkers.Contains(worker2find);   //TODO Funktioniert das?
     }
 
     #endregion

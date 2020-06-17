@@ -37,30 +37,36 @@ public class HousingBuilding : Building
     private Vector3 GetWorkerOffset()
     {
         var x = transform.position.x + _workers.Count;
-        return new Vector3(x,transform.position.y,transform.position.z);
+        if (_workers.Count < 5) {
+            return new Vector3(x - 2, transform.position.y, transform.position.z - 2);
+        } else {
+            return new Vector3(x - 7, transform.position.y, transform.position.z - 4);
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
         _spawnTime += Time.deltaTime;
-        var timeEffiency = 15 / CalcEfficiency();
-        if (!(_spawnTime >= timeEffiency)) return; // every 15 seconds
+        var timeEffiency = 30 / CalcEfficiency();
+        if (!(_spawnTime >= timeEffiency)) return; // every 30 seconds
         {
             _spawnTime %= 1f; // reset
         }
-        _workers.Add(SpawnWorker());
+
+        if (maximumWorkers > _workers.Count) {
+            _workers.Add(SpawnWorker());
+        }
     }
 
     public override void EconomyForBuilding(Store store, List<Tile> neighborTiles)
     {
-        return;//TODO
+        return;
     }
 
     public override float CalcEfficiency()
     {
-       var test =  _workers.Select(x => x.GetHappiness()).Average();
-       
        if (_workers.Any())
            return _workers.Sum(worker => worker.GetHappiness()) / _workers.Count;
        return 0f;
