@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class ProductionBuilding : Building
 {
@@ -19,6 +20,9 @@ public class ProductionBuilding : Building
     public int maximumNeighbors; // The maximum number of surrounding tiles its efficiency scales with(0-6)
     public List<ResourceTypes> inputResources = new List<ResourceTypes>(); // A choice for input resource types(0, 1 or 2 types)
     public ResourceTypes outputResource; // A choice for output resource type
+
+    public int maxJobs; // The number of maximum jobs that the production building can offer
+    
     #endregion
     
     #region Resources
@@ -26,6 +30,15 @@ public class ProductionBuilding : Building
     #endregion
     
     #region economy
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        for (int i = 0; i < maxJobs; i++)
+        {
+            _jobManager.AddAvailableJob(new Job(this));
+        }
+    }
     
     public override void EconomyForBuilding(Store store,List<Tile>neighborTiles)
     {

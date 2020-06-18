@@ -104,7 +104,10 @@ public class Worker : MonoBehaviour
 
     public void BecomeOfAge()
     {
-        _jobManager.RegisterWorker(this);
+        if (!_jobManager.AmIAlreadyRegistered(this) && !_jobManager.DoIHaveAJob(this))
+        { 
+            _jobManager.RegisterWorker(this);
+        }
     }
 
     private void Retire()

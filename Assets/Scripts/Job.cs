@@ -1,7 +1,7 @@
 ﻿public class Job
 {
-    public Worker _worker; //The worker occupying this job
-    public Building _building; //The building offering the job
+    private Worker _worker; //The worker occupying this job
+    private Building _building; //The building offering the job
 
     //Constructor. Call new Job(this) from the Building script to instanciate a job
     public Job(Building building)
@@ -19,5 +19,10 @@
     {
         _worker = null;
         _building.WorkerRemovedFromBuilding(w);
+    }
+
+    public Worker getWorker()
+    {
+        return _worker;
     }
 }
