@@ -55,7 +55,15 @@ public class JobManager : MonoBehaviour
 
     public void RemoveWorker(Worker w)
     {
-        _unoccupiedWorkers.Remove(w);
+        Job jobToBeAvailable = _occupiedJobs.Find(job => job.getWorker() == w);
+
+        if (!(jobToBeAvailable is null))
+        {
+            _occupiedJobs.Remove(jobToBeAvailable);
+            jobToBeAvailable.RemoveWorker(w);
+            _availableJobs.Add(jobToBeAvailable);
+            Debug.Log("Worker was removed from job. Available jobs: " + _availableJobs.Count + ", occupied Jobs: " + _occupiedJobs.Count);
+        }
     }
     
     public bool AmIAlreadyRegistered(Worker worker2find)

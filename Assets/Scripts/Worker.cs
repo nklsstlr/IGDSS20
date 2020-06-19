@@ -40,7 +40,7 @@ public class Worker : MonoBehaviour
             Consume();
         }
 
-        if (_age > 14)
+        if (_age > 14 && _age <= 64)
         {
             BecomeOfAge();
         }
