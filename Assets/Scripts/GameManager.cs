@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     private void StartEconomy()
     {
         ecoTime += Time.deltaTime;
-        if (ecoTime >= 1f) // every second
+        if (ecoTime >= 1f) // TODO: every second (should be 60 seconds, but we sped it up for testing purposes)
         {
             ecoTime %= 1f; // reset
             RunEconmyCycle();
