@@ -21,7 +21,7 @@ public class ProductionBuilding : Building
     public List<ResourceTypes> inputResources = new List<ResourceTypes>(); // A choice for input resource types(0, 1 or 2 types)
     public ResourceTypes outputResource; // A choice for output resource type
 
-    public int maxJobs; // The number of maximum jobs that the production building can offer
+    public float maxJobs; // The number of maximum jobs that the production building can offer
     
     #endregion
     
@@ -68,14 +68,18 @@ public class ProductionBuilding : Building
         
     }
 
-    public override float CalcEfficiency()
+    public float CalcEfficiency()
     {
-        var tile = gameObject.GetComponentInParent(typeof(Tile)) as Tile;//TODO fancy zeile
-        
+        return (6 * EfficiencyNeighborCount() + 3 * CalcAverageWorkerHappiness() + 1 * CalcJobOccupancy()) / 10;
+    }
+
+    private float EfficiencyNeighborCount()
+    {
+        var tile = gameObject.GetComponentInParent(typeof(Tile)) as Tile; //TODO fancy zeile
+
         // calculate efficiency
         if (efficiencyScalesWithNeighboringTiles != Tile.TileTypes.Empty)
         {
-            
             int neighborCount = tile._neighborTiles.Count(x =>
                 x._type == efficiencyScalesWithNeighboringTiles &&
                 x._building == null);
@@ -94,6 +98,13 @@ public class ProductionBuilding : Building
         }
 
         return 1f;
+    }
+    
+    public  float CalcJobOccupancy()
+    {
+        if (!_workers.Any())
+            return 0f;
+        return _workers.Count / maxJobs;
     }
 
     #endregion economy

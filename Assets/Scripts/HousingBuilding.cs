@@ -49,7 +49,7 @@ public class HousingBuilding : Building
     void Update()
     {
         _spawnTime += Time.deltaTime;
-        var timeEffiency = 30 / CalcEfficiency();
+        var timeEffiency = 30 / CalcAverageWorkerHappiness();
         if (!(_spawnTime >= timeEffiency)) return; // every 30 seconds
         {
             _spawnTime %= 1f; // reset
@@ -65,10 +65,5 @@ public class HousingBuilding : Building
         return;
     }
 
-    public override float CalcEfficiency()
-    {
-       if (_workers.Any())
-           return _workers.Sum(worker => worker.GetHappiness()) / _workers.Count;
-       return 0f;
-    }
+    
 }
