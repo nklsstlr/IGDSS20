@@ -51,19 +51,12 @@ public abstract class Building : MonoBehaviour
     {
         _workers.Remove(w);
     }
-
-    public float AverageWorkerHappines()
-    {
-        if (!_workers.Any())
-            return 0;
-        
-
-    }
+    
     #endregion
 
     public abstract void EconomyForBuilding(Store store, List<Tile> neighborTiles);
 
-    public  float CalcAverageHappiness()
+    public  float CalcAverageWorkerHappiness()
     {
         if (_workers.Any())
             return _workers.Sum(worker => worker.GetHappiness()) / _workers.Count;

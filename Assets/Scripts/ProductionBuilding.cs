@@ -70,7 +70,7 @@ public class ProductionBuilding : Building
 
     public float CalcEfficiency()
     {
-        return (6 * EfficiencyNeighborCount() + CalcAverageHappiness() * 3 + CalcJobWorkload() * 1) / 10;
+        return (6 * EfficiencyNeighborCount() + 3 * CalcAverageWorkerHappiness() + 1 * CalcJobOccupancy()) / 10;
     }
 
     private float EfficiencyNeighborCount()
@@ -100,7 +100,7 @@ public class ProductionBuilding : Building
         return 1f;
     }
     
-    public  float CalcJobWorkload()
+    public  float CalcJobOccupancy()
     {
         if (!_workers.Any())
             return 0f;

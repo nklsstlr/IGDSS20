@@ -49,7 +49,7 @@ public class HousingBuilding : Building
     void Update()
     {
         _spawnTime += Time.deltaTime;
-        var timeEffiency = 30 / CalcAverageHappiness();
+        var timeEffiency = 30 / CalcAverageWorkerHappiness();
         if (!(_spawnTime >= timeEffiency)) return; // every 30 seconds
         {
             _spawnTime %= 1f; // reset
