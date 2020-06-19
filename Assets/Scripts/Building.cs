@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class Building : MonoBehaviour
@@ -50,10 +51,26 @@ public abstract class Building : MonoBehaviour
     {
         _workers.Remove(w);
     }
+
+    public float AverageWorkerHappines()
+    {
+        if (!_workers.Any())
+            return 0;
+        
+
+    }
     #endregion
 
     public abstract void EconomyForBuilding(Store store, List<Tile> neighborTiles);
-    public abstract float CalcEfficiency();
+
+    public  float CalcAverageHappiness()
+    {
+        if (_workers.Any())
+            return _workers.Sum(worker => worker.GetHappiness()) / _workers.Count;
+        return 0f;
+    }
+    
+    
     
 
 }
