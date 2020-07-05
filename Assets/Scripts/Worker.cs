@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Experimental.Audio;
 
 public class Worker : MonoBehaviour
@@ -6,23 +7,95 @@ public class Worker : MonoBehaviour
     #region Manager References
     public JobManager _jobManager; //Reference to the JobManager
     public GameManager _gameManager;//Reference to the GameManager
+    public NavigationManager _navManager;
     public Store _store;//Reference to the Store
     #endregion
 
     public float _age; // The age of this worker
     private float _consumeHappiness = 0f;
     private float _ageTime = 0f;
+    private Tile _nextTileToMove;
+    public Tile _currentTile;
+    public Building _home;
+    private Building _destination;
+    private bool shouldWait = false;
+    private float stayingTick = 0f;
+    
+    private float movingTick = 0f;
+    private float movingProgess = 0f;
 
     // Start is called before the first frame update
     void Start()
     {
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         Age();
+        WalkToBuilding();
     }
+
+    private void WalkToBuilding()
+    {
+        if (!_jobManager.DoIHaveAJob(this)) return;
+
+        if (_destination is null)
+        {
+            _destination = _jobManager.GetJob(this).getBuildingOfjob();
+        }
+
+        if (_nextTileToMove is null)
+        {
+            _nextTileToMove = _navManager.CalculateNextTile(_destination, _currentTile);
+        }
+
+        if (shouldWait)
+        {
+            stayingTick += Time.deltaTime;
+            if (!(stayingTick >= 5f)) return;
+            stayingTick %= 5f;
+            shouldWait = false;
+        }
+        movingTick += Time.deltaTime;
+        if (!(movingTick >= 0.1f)) return;
+        movingTick %= 0.1f;
+        if (Math.Abs(movingProgess) < 0.0001)
+        {
+            _nextTileToMove = _navManager.CalculateNextTile(_destination, _currentTile);
+        }
+
+        movingProgess += 0.1f;
+
+
+        transform.position = Vector3.Lerp(_currentTile.transform.position, _nextTileToMove.transform.position, movingProgess);
+        transform.LookAt(_destination.transform);
+        if (Math.Abs(movingProgess - 1f) < 0.0001)
+        {
+            movingProgess = 0.0f;
+            _currentTile = _nextTileToMove;
+            CheckIfBuildingSwitch();
+        }
+        
+    }
+
+    private void CheckIfBuildingSwitch()
+    {
+        if (_destination == _currentTile._building)
+        {
+            if (_destination == _home)
+            {
+                _destination = _jobManager.GetJob(this).getBuildingOfjob();
+            }
+            else
+            {
+                _destination = _home;
+            }
+            shouldWait = true;
+        }
+    }
+    
 
 
     private void Age()

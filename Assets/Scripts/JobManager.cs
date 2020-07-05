@@ -76,6 +76,11 @@ public class JobManager : MonoBehaviour
         return _occupiedJobs.Exists(job => job.getWorker() == worker2find);
     }
 
+    public Job GetJob(Worker worker)
+    {
+        return _occupiedJobs.Find(job => job.getWorker() == worker);
+    }
+
     #endregion
     
 }

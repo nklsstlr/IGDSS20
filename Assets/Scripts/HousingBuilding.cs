@@ -25,8 +25,11 @@ public class HousingBuilding : Building
         var characterGameObj = Instantiate(_characterPrefab,GetWorkerOffset(),transform.rotation);
         var worker =  characterGameObj.GetComponent<Worker>();
         worker._jobManager = _jobManager;
+        worker._navManager = _navManager;
         worker._gameManager = _GameManager;
         worker._store = _Store;
+        worker._home = this;
+        worker._currentTile = gameObject.GetComponentInParent(typeof(Tile)) as Tile; //TODO fancy zeile
         
         return worker;
 

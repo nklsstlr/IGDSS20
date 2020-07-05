@@ -1,4 +1,6 @@
-﻿public class Job
+﻿using UnityEngine.Rendering;
+
+public class Job
 {
     private Worker _worker; //The worker occupying this job
     private Building _building; //The building offering the job
@@ -25,4 +27,10 @@
     {
         return _worker;
     }
+
+    public Building getBuildingOfjob()
+    {
+        return _building;
+    }
+        
 }

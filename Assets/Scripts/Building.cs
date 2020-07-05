@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class Building : MonoBehaviour
 {
     public BuildingTypes type; // The name of the building
-    public List<Tile.TileTypes> canBeBuiltOnTileTypes; // A restriction on which types of tiles it can be placed on
+    public List<TileTypes> canBeBuiltOnTileTypes; // A restriction on which types of tiles it can be placed on
     
     public float buildCostMoney; // placement money cost
     public float buildCostPlanks; // placement planks cost
@@ -14,6 +14,7 @@ public abstract class Building : MonoBehaviour
     #region Manager References
     public JobManager _jobManager; //Reference to the JobManager
     public GameManager _GameManager;
+    public NavigationManager _navManager;
     public Store _Store;
 
     #endregion
@@ -25,6 +26,12 @@ public abstract class Building : MonoBehaviour
     #region Jobs
     public List<Job> _jobs; // List of all available Jobs. Is populated in Start()
     
+    #endregion
+    
+    #region Path
+
+    public int[,] potentialFieldMap;
+
     #endregion
     
 

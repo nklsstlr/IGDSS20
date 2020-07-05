@@ -15,7 +15,7 @@ public class ProductionBuilding : Building
     public float resourceGenerationProgress = 0f; // This is the time spent in production so far
     public float outputCount; // The number of output resources per generation cycle(for example the Sawmill produces 2 planks at a time)
     
-    public Tile.TileTypes efficiencyScalesWithNeighboringTiles = Tile.TileTypes.Empty; // A choice if its efficiency scales with a specific type of surrounding tile
+    public TileTypes efficiencyScalesWithNeighboringTiles = TileTypes.Empty; // A choice if its efficiency scales with a specific type of surrounding tile
     public int minimumNeighbors; // The minimum number of surrounding tiles its efficiency scales with(0-6)
     public int maximumNeighbors; // The maximum number of surrounding tiles its efficiency scales with(0-6)
     public List<ResourceTypes> inputResources = new List<ResourceTypes>(); // A choice for input resource types(0, 1 or 2 types)
@@ -78,7 +78,7 @@ public class ProductionBuilding : Building
         var tile = gameObject.GetComponentInParent(typeof(Tile)) as Tile; //TODO fancy zeile
 
         // calculate efficiency
-        if (efficiencyScalesWithNeighboringTiles != Tile.TileTypes.Empty)
+        if (efficiencyScalesWithNeighboringTiles != TileTypes.Empty)
         {
             int neighborCount = tile._neighborTiles.Count(x =>
                 x._type == efficiencyScalesWithNeighboringTiles &&

@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     private float ecoTime= 0f;
     private float moneyIncome = 100f;
     public JobManager _jobManager; //Reference to the JobManager
+    public NavigationManager _navigationManager;
 
     #endregion
     
@@ -226,39 +227,79 @@ public class GameManager : MonoBehaviour
         }
     }
     //Returns a list of all neighbors of a given tile
-    private List<Tile> FindNeighborsOfTile(Tile t,string[] skip = null)
+    private List<Tile> FindNeighborsOfTile(Tile t)
     {
-        var neighbors = new List<Tile>();
+        List<Tile> result = new List<Tile>();
 
-        if (t._coordinateWidth - 1 >= 0)
-                neighbors.Add(_tileMap[t._coordinateHeight, t._coordinateWidth - 1]);//links daneben
-            
-            if(t._coordinateWidth - 1 >= 0 && t._coordinateHeight -1 >=0)
-                neighbors.Add(_tileMap[t._coordinateHeight - 1, t._coordinateWidth - 1]);//drüberLinks
+        int height = t._coordinateHeight;
+        int width = t._coordinateWidth;
 
-            if (t._coordinateHeight + 1 < heightMap.height)
-                neighbors.Add(_tileMap[t._coordinateHeight + 1, t._coordinateWidth ]);//drunterLinks‚
-             
-            if(t._coordinateWidth +1 < heightMap.width )
-                neighbors.Add(_tileMap[t._coordinateHeight, t._coordinateWidth + 1]);//rechtsDaneben
-            
-            if(t._coordinateHeight -1 >=0)
-                neighbors.Add(_tileMap[t._coordinateHeight - 1, t._coordinateWidth]);//drüberRechts
-            
-            if(t._coordinateWidth + 1 < heightMap.width && t._coordinateHeight +1 <heightMap.height)
-                neighbors.Add(_tileMap[t._coordinateHeight + 1, t._coordinateWidth + 1]);//drunterRechts
-            
-        return neighbors;
+        //top, top-left, left, right, bottom, bottom-left
+        //Check edge cases
+        //top
+        if (height > 0)
+        {
+            result.Add(_tileMap[height - 1, width]);
+        }
+
+        //bottom
+        if (height < _tileMap.GetLength(0) - 1)
+        {
+            result.Add(_tileMap[height + 1, width]);
+        }
+
+        //left
+        if (width > 0)
+        {
+            result.Add(_tileMap[height, width - 1]);
+        }
+
+        //right
+        if (width < _tileMap.GetLength(1) - 1)
+        {
+            result.Add(_tileMap[height, width + 1]);
+        }
+
+        //if the column is even
+        //top-left + bottom-left
+        if (height % 2 == 0)
+        {
+            if (height > 0 && width > 0)
+            {
+                result.Add(_tileMap[height - 1, width - 1]);
+            }
+
+            if (height < _tileMap.GetLength(0) - 1 && width > 0)
+            {
+                result.Add(_tileMap[height + 1, width - 1]);
+            }
+        }
+        //if the column is uneven
+        //top-right + bottom-right
+        else
+        {
+            if (height > 0 && width < _tileMap.GetLength(1) - 1)
+            {
+                result.Add(_tileMap[height - 1, width + 1]);
+            }
+
+            if (height < _tileMap.GetLength(0) - 1 && width < _tileMap.GetLength(1) - 1)
+            {
+                result.Add(_tileMap[height + 1, width + 1]);
+            }
+        }
+
+        return result;
     }
 
-     Tuple<GameObject,Tile.TileTypes> GetTile(float colorValue)
+     Tuple<GameObject,TileTypes> GetTile(float colorValue)
     {
-        if (colorValue == 0f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("WaterTile")),Tile.TileTypes.Water);
-        else if (colorValue > 0f && colorValue <= 0.2f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("SandTile")),Tile.TileTypes.Sand);
-        else if (colorValue > 0.2f && colorValue <= 0.4f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("GrassTile")),Tile.TileTypes.Grass);
-        else if (colorValue > 0.4f && colorValue <= 0.6f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("ForestTile")),Tile.TileTypes.Forest);
-        else if (colorValue > 0.6f && colorValue <= 0.8f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("StoneTile")),Tile.TileTypes.Stone);
-        else if (colorValue > 0.8f && colorValue <= 1f) return new Tuple<GameObject,Tile.TileTypes>(_tiles.First(x => x.name.Contains("MountainTile")),Tile.TileTypes.Mountain);
+        if (colorValue == 0f) return new Tuple<GameObject,TileTypes>(_tiles.First(x => x.name.Contains("WaterTile")),TileTypes.Water);
+        else if (colorValue > 0f && colorValue <= 0.2f) return new Tuple<GameObject,TileTypes>(_tiles.First(x => x.name.Contains("SandTile")),TileTypes.Sand);
+        else if (colorValue > 0.2f && colorValue <= 0.4f) return new Tuple<GameObject,TileTypes>(_tiles.First(x => x.name.Contains("GrassTile")),TileTypes.Grass);
+        else if (colorValue > 0.4f && colorValue <= 0.6f) return new Tuple<GameObject,TileTypes>(_tiles.First(x => x.name.Contains("ForestTile")),TileTypes.Forest);
+        else if (colorValue > 0.6f && colorValue <= 0.8f) return new Tuple<GameObject,TileTypes>(_tiles.First(x => x.name.Contains("StoneTile")),TileTypes.Stone);
+        else if (colorValue > 0.8f && colorValue <= 1f) return new Tuple<GameObject,TileTypes>(_tiles.First(x => x.name.Contains("MountainTile")),TileTypes.Mountain);
         else throw new IndexOutOfRangeException("Color value not in range!");
     }
     #endregion
@@ -284,6 +325,8 @@ public class GameManager : MonoBehaviour
                 b._jobManager = _jobManager;
                 b._GameManager = this;
                 b._Store = _store;
+                b._navManager = _navigationManager;
+                b.potentialFieldMap = _navigationManager.GeneratePotentialFieldMap(t,_tileMap.GetLength(0), _tileMap.GetLength(1));
                 
 
                 _store.RemoveResource(ResourceTypes.Money,prefab.buildCostMoney);
